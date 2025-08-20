@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmbalaVerde - Doces com Embalagens Sustentáveis</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiRW1iYWxhVmVyZGUiLCJzaG9ydF9uYW1lIjoiRW1iYWxhVmVyZGUiLCJzdGFydF91cmwiOiIvIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI2ZmZmZmZiIsInRoZW1lX2NvbG9yIjoiIzIxODA4ZCJ9">
+    <meta name="description" content="Catálogo de doces artesanais com embalagens sustentáveis e configurador de impacto ambiental">
+    <meta name="theme-color" content="#21808d">
+</head>
+<body>
+    <!-- Skip Link para Acessibilidade -->
+    <a href="#main-content" class="skip-link">Pular para o conteúdo principal (Alt+S)</a>
+
+    <!-- Header com Navegação -->
+    <header class="header" role="banner">
+        <nav class="nav container" role="navigation" aria-label="Navegação principal">
+            <div class="nav__brand">
+                <button class="nav__logo" onclick="navigate('/')" aria-label="EmbalaVerde - Ir para página inicial">
+                    🌱 <span>EmbalaVerde</span>
+                </button>
+            </div>
+            
+            <div class="nav__menu">
+                <button class="nav__item" data-page="home" onclick="navigate('/')" aria-label="Ir para página inicial">
+                    🏠 Início
+                </button>
+                <button class="nav__item" data-page="catalog" onclick="navigate('/catalog')" aria-label="Ver catálogo de doces">
+                    📖 Catálogo
+                </button>
+                <button class="nav__item" data-page="cart" onclick="navigate('/cart')" aria-label="Ver carrinho de compras" id="cart-nav">
+                    🛒 Carrinho (<span id="cart-count">0</span>)
+                </button>
+                <button class="nav__item" data-page="admin" onclick="navigate('/admin')" aria-label="Área administrativa">
+                    ⚙️ Admin
+                </button>
+
+                <!-- Item de menu: Sobre o projeto -->
+                <button class="nav__item" data-page="about" onclick="navigate('/about')" aria-label="Sobre o projeto EmbalaVerde">
+                    📄 Sobre
+                </button>
+            </div>
+
+            <!-- Ações globais: busca e alternância de tema -->
+            <div class="nav__actions">
+                <div class="nav__search">
+                    <input type="search" id="global-search" class="form-control" placeholder="Buscar doces... (pressione /)" aria-label="Buscar produtos">
+                    <button onclick="performSearch()" aria-label="Executar busca">🔍</button>
+                </div>
+                <button id="theme-toggle" class="nav__theme-toggle" aria-label="Alternar modo claro/escuro">🌙</button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main id="main-content" class="main" role="main">
+        <!-- Loading Spinner -->
+        <!-- Loading overlay is hidden by default; it will be shown when the Router adds the .show class -->
+        <div id="loading" class="loading" aria-hidden="true">
+            <div class="loading__spinner"></div>
+            <p>Carregando...</p>
+        </div>
+
+        <!-- Página Inicial -->
+        <section id="home" class="page" role="region" aria-labelledby="home-title">
+            <div class="container">
+                <div class="hero">
+                    <h1 id="home-title" class="hero__title">EmbalaVerde</h1>
+                    <p class="hero__subtitle">Doces artesanais com embalagens sustentáveis e acessíveis</p>
+                    <div class="hero__features">
+                        <div class="feature">
+                            <div class="feature__icon">🌱</div>
+                            <h3>Sustentável</h3>
+                            <p>Embalagens biodegradáveis e compostáveis</p>
+                        </div>
+                        <div class="feature">
+                            <div class="feature__icon">♿</div>
+                            <h3>Acessível</h3>
+                            <p>Etiquetas em Braille e QR codes com áudio</p>
+                        </div>
+                        <div class="feature">
+                            <div class="feature__icon">📊</div>
+                            <h3>Impacto Positivo</h3>
+                            <p>Veja quanto plástico e água você economiza</p>
+                        </div>
+                    </div>
+                    <div class="hero__actions">
+                        <button class="btn btn--primary btn--lg" onclick="navigate('/catalog')">
+                            Explorar Catálogo
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Catálogo -->
+        <section id="catalog" class="page hidden" role="region" aria-labelledby="catalog-title">
+            <div class="container">
+                <header class="page__header">
+                    <h1 id="catalog-title">Catálogo de Doces</h1>
+                    <p>Doces artesanais com opções de embalagem sustentável</p>
+                </header>
+
+                <!-- Filtros -->
+                <div class="filters" role="region" aria-labelledby="filters-title">
+                    <h2 id="filters-title" class="sr-only">Filtros de busca</h2>
+                    <div class="filters__group">
+                        <label class="form-label" for="tag-filter">Filtrar por tipo de embalagem:</label>
+                        <select id="tag-filter" class="form-control" onchange="filterProducts()" aria-describedby="tag-filter-help">
+                            <option value="">Todas as embalagens</option>
+                            <option value="biodegradavel">🌱 Biodegradável</option>
+                            <option value="compostavel">♻️ Compostável</option>
+                            <option value="reciclavel">📦 Reciclável</option>
+                            <option value="soluvel_em_agua">💧 Solúvel em Água</option>
+                            <option value="papel_semente">🌱 Papel Semente</option>
+                        </select>
+                        <div id="tag-filter-help" class="form-help">Escolha o tipo de embalagem sustentável desejado</div>
+                    </div>
+                    <button class="btn btn--secondary" onclick="clearFilters()">Limpar Filtros</button>
+                </div>
+
+                <!-- Lista de Produtos -->
+                <div id="products-grid" class="products-grid" role="region" aria-live="polite" aria-labelledby="products-title">
+                    <h2 id="products-title" class="sr-only">Lista de produtos</h2>
+                    <!-- Produtos serão inseridos aqui pelo JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Configurador -->
+        <section id="configurator" class="page hidden" role="region" aria-labelledby="configurator-title">
+            <div class="container">
+                <header class="page__header">
+                    <button class="btn btn--outline" onclick="navigate('/catalog')" aria-label="Voltar ao catálogo">
+                        ← Voltar ao Catálogo
+                    </button>
+                    <h1 id="configurator-title">Configure sua Embalagem</h1>
+                </header>
+
+                <div class="configurator">
+                    <div class="configurator__product">
+                        <div id="product-info" class="product-card">
+                            <!-- Info do produto será inserida aqui -->
+                        </div>
+                    </div>
+
+                    <div class="configurator__options">
+                        <form id="packaging-form" aria-labelledby="packaging-form-title">
+                            <h2 id="packaging-form-title">Opções de Embalagem</h2>
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="material-select">Material da Embalagem:</label>
+                                <select id="material-select" class="form-control" onchange="updateConfiguration()" required aria-describedby="material-help">
+                                    <!-- Opções serão inseridas pelo JavaScript -->
+                                </select>
+                                <div id="material-help" class="form-help">Escolha o material sustentável para sua embalagem</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="size-select">Tamanho:</label>
+                                <select id="size-select" class="form-control" onchange="updateConfiguration()" required aria-describedby="size-help">
+                                    <!-- Opções serão inseridas pelo JavaScript -->
+                                </select>
+                                <div id="size-help" class="form-help">Selecione o tamanho adequado para sua compra</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="quantity">Quantidade:</label>
+                                <input type="number" id="quantity" class="form-control" min="1" max="50" value="1" onchange="updateConfiguration()" aria-describedby="quantity-help">
+                                <div id="quantity-help" class="form-help">Quantidade de unidades desejada</div>
+                            </div>
+                        </form>
+
+                        <!-- Impacto Ambiental -->
+                        <div id="impact-display" class="impact-display" role="region" aria-labelledby="impact-title">
+                            <h3 id="impact-title">Impacto Ambiental</h3>
+                            <div class="impact-metrics">
+                                <div class="metric">
+                                    <span class="metric__icon">🚫</span>
+                                    <span class="metric__value" id="plastic-avoided">0g</span>
+                                    <span class="metric__label">Plástico evitado</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric__icon">💧</span>
+                                    <span class="metric__value" id="water-saved">0ml</span>
+                                    <span class="metric__label">Água economizada</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Instruções de Descarte -->
+                        <div id="disposal-instructions" class="disposal-instructions">
+                            <h3>Instruções de Descarte</h3>
+                            <div id="disposal-content">
+                                <!-- Conteúdo será inserido pelo JavaScript -->
+                            </div>
+                        </div>
+
+                        <!-- Etiqueta Inclusiva -->
+                        <div class="inclusive-label">
+                            <h3>Etiqueta Inclusiva</h3>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="generate-inclusive" onchange="toggleInclusiveLabel()" aria-describedby="inclusive-help">
+                                    Gerar etiqueta com Braille e QR Code
+                                </label>
+                                <div id="inclusive-help" class="form-help">Etiqueta acessível para pessoas com deficiência visual</div>
+                            </div>
+                            
+                            <div id="inclusive-options" class="inclusive-options hidden">
+                                <div class="form-group">
+                                    <label class="form-label" for="braille-text">Texto para Braille:</label>
+                                    <input type="text" id="braille-text" class="form-control" placeholder="Ex: Brigadeiro Gourmet" onchange="generateBraille()" aria-describedby="braille-help">
+                                    <div id="braille-help" class="form-help">Texto que será convertido para Braille</div>
+                                </div>
+                                
+                                <div id="braille-preview" class="braille-preview">
+                                    <!-- Preview do Braille será inserido aqui -->
+                                </div>
+
+                                <div class="inclusive-actions">
+                                    <button type="button" class="btn btn--secondary" onclick="generateQRCode()">
+                                        Gerar QR Code
+                                    </button>
+                                    <button type="button" class="btn btn--secondary" onclick="playAudioDescription()">
+                                        🔊 Ouvir Descrição
+                                    </button>
+                                </div>
+                                
+                                <div id="qr-preview" class="qr-preview">
+                                    <!-- QR Code será inserido aqui -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Resumo e Ações -->
+                        <div class="configurator__summary">
+                            <div class="price-summary">
+                                <h3>Resumo do Pedido</h3>
+                                <div class="price-line">
+                                    <span>Produto:</span>
+                                    <span id="base-price">R$ 0,00</span>
+                                </div>
+                                <div class="price-line">
+                                    <span>Embalagem:</span>
+                                    <span id="packaging-price">R$ 0,00</span>
+                                </div>
+                                <div class="price-line total">
+                                    <span>Total:</span>
+                                    <span id="total-price">R$ 0,00</span>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn--primary btn--full-width" onclick="addToCart()" id="add-to-cart-btn">
+                                Adicionar ao Carrinho
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Carrinho -->
+        <section id="cart" class="page hidden" role="region" aria-labelledby="cart-title">
+            <div class="container">
+                <h1 id="cart-title">Carrinho de Compras</h1>
+                
+                <div id="cart-content">
+                    <div id="cart-items" class="cart-items">
+                        <!-- Itens do carrinho serão inseridos aqui -->
+                    </div>
+                    
+                    <div class="cart-summary">
+                        <h2>Resumo do Pedido</h2>
+                        <div class="summary-line">
+                            <span>Subtotal:</span>
+                            <span id="cart-subtotal">R$ 0,00</span>
+                        </div>
+                        <div class="summary-line">
+                            <span>Frete:</span>
+                            <span id="shipping-cost">R$ 8,90</span>
+                        </div>
+                        <div class="summary-line total">
+                            <span>Total:</span>
+                            <span id="cart-total">R$ 0,00</span>
+                        </div>
+                        
+                        <button class="btn btn--primary btn--full-width" onclick="navigate('/checkout')" id="checkout-btn">
+                            Finalizar Compra
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="empty-cart" class="empty-state hidden">
+                    <h2>Seu carrinho está vazio</h2>
+                    <p>Que tal explorar nosso catálogo?</p>
+                    <button class="btn btn--primary" onclick="navigate('/catalog')">
+                        Ver Catálogo
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Checkout -->
+        <section id="checkout" class="page hidden" role="region" aria-labelledby="checkout-title">
+            <div class="container">
+                <h1 id="checkout-title">Finalizar Compra</h1>
+                
+                <form id="checkout-form" class="checkout-form">
+                    <div class="checkout-section">
+                        <h2>Dados Pessoais</h2>
+                        <div class="form-group">
+                            <label class="form-label" for="customer-name">Nome completo:</label>
+                            <input type="text" id="customer-name" class="form-control" required aria-describedby="name-help">
+                            <div id="name-help" class="form-help">Digite seu nome completo</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="customer-email">E-mail:</label>
+                            <input type="email" id="customer-email" class="form-control" required aria-describedby="email-help">
+                            <div id="email-help" class="form-help">E-mail para confirmação do pedido</div>
+                        </div>
+                    </div>
+
+                    <div class="checkout-section">
+                        <h2>Endereço de Entrega</h2>
+                        <div class="form-group">
+                            <label class="form-label" for="customer-address">Endereço:</label>
+                            <textarea id="customer-address" class="form-control" required aria-describedby="address-help"></textarea>
+                            <div id="address-help" class="form-help">Endereço completo para entrega</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="customer-region">Região:</label>
+                            <select id="customer-region" class="form-control" onchange="updateShipping()" required>
+                                <option value="">Selecione...</option>
+                                <option value="sudeste">Sudeste</option>
+                                <option value="sul">Sul</option>
+                                <option value="nordeste">Nordeste</option>
+                                <option value="norte">Norte</option>
+                                <option value="centro-oeste">Centro-Oeste</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="checkout-actions">
+                        <button type="button" class="btn btn--outline" onclick="navigate('/cart')">
+                            Voltar ao Carrinho
+                        </button>
+                        <button type="submit" class="btn btn--primary">
+                            Confirmar Pedido
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Página do Pedido -->
+        <section id="order" class="page hidden" role="region" aria-labelledby="order-title">
+            <div class="container">
+                <h1 id="order-title">Pedido Confirmado!</h1>
+                <div id="order-details" class="order-details">
+                    <!-- Detalhes do pedido serão inseridos aqui -->
+                </div>
+                <div class="order-actions">
+                    <button class="btn btn--primary" onclick="downloadOrderPDF()">
+                        📄 Baixar Comprovante PDF
+                    </button>
+                    <button class="btn btn--outline" onclick="navigate('/catalog')">
+                        Fazer Novo Pedido
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Admin -->
+        <section id="admin" class="page hidden" role="region" aria-labelledby="admin-title">
+            <div class="container">
+                <h1 id="admin-title">Administração</h1>
+                
+                <div class="admin-tabs" role="tablist">
+                    <button class="admin-tab active" onclick="showAdminTab('products')" role="tab" aria-selected="true" aria-controls="admin-products">
+                        Doces
+                    </button>
+                    <button class="admin-tab" onclick="showAdminTab('materials')" role="tab" aria-selected="false" aria-controls="admin-materials">
+                        Materiais
+                    </button>
+                </div>
+
+                <div id="admin-products" class="admin-panel" role="tabpanel" aria-labelledby="admin-products-title">
+                    <div class="admin-header">
+                        <h2 id="admin-products-title">Gerenciar Doces</h2>
+                        <button class="btn btn--primary" onclick="openProductModal()">
+                            Adicionar Doce
+                        </button>
+                    </div>
+                    <div id="admin-products-list" class="admin-list">
+                        <!-- Lista de produtos será inserida aqui -->
+                    </div>
+                </div>
+
+                <div id="admin-materials" class="admin-panel hidden" role="tabpanel" aria-labelledby="admin-materials-title">
+                    <div class="admin-header">
+                        <h2 id="admin-materials-title">Gerenciar Materiais</h2>
+                        <button class="btn btn--primary" onclick="openMaterialModal()">
+                            Adicionar Material
+                        </button>
+                    </div>
+                    <div id="admin-materials-list" class="admin-list">
+                        <!-- Lista de materiais será inserida aqui -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        
+
+        <!-- Sobre o Projeto -->
+        <section id="about" class="page hidden" role="region" aria-labelledby="about-title">
+            <div class="container">
+                <header class="page__header">
+                    <h1 id="about-title">Sobre o EmbalaVerde</h1>
+                    <p>Entenda o problema que queremos resolver, a solução proposta e o impacto gerado.</p>
+                </header>
+                <article class="about-content">
+                    <h2>Problema e Oportunidade</h2>
+                    <p>De acordo com estudos sobre a decomposição do lixo, o <strong>plástico leva em média 400&nbsp;anos para se decompor</strong>, enquanto o papel demora apenas <strong>3&nbsp;a&nbsp;6&nbsp;meses</strong><sup><a href="#ref-1" aria-label="Referência 1">[1]</a></sup>. O plástico permanece no ambiente por gerações, mata animais por ingestão ou emaranhamento e libera substâncias nocivas<sup><a href="#ref-2" aria-label="Referência 2">[2]</a></sup>. Ao mesmo tempo, pessoas com deficiência visual enfrentam dificuldades na identificação de produtos no supermercado: a presença de consumidores cegos só é possível graças à ajuda de outras pessoas, pois são raras as embalagens que trazem Braille e texturas diferenciadas<sup><a href="#ref-3" aria-label="Referência 3">[3]</a></sup>. Esse cenário mostra que há espaço para soluções que reduzam o uso de plástico e promovam a inclusão.</p>
+
+                    <h2>Público‑Alvo</h2>
+                    <p>O público da nossa solução inclui consumidores engajados com sustentabilidade e <em>design inclusivo</em>, pequenas empresas de doces artesanais e, especialmente, pessoas cegas ou com baixa visão. Conforme especialistas, a autonomia desse público depende de rótulos em Braille e embalagens com formatos ou texturas específicas<sup><a href="#ref-3" aria-label="Referência 3">[3]</a></sup>. Além disso, há uma demanda crescente por produtos sustentáveis e acessíveis nas escolas e comunidades participantes do Desafio Liga Jovem.</p>
+
+                    <h2>Inovação</h2>
+                    <p>O <strong>EmbalaVerde</strong> propõe a integração de <strong>embalagens biodegradáveis e compostáveis</strong> com recursos de acessibilidade. Utilizamos materiais como papel‑semente, papel compostável e filme solúvel em água, que decompõem rapidamente e evitam o uso de plástico. Cada embalagem pode receber <strong>etiquetas em Braille</strong> e <strong>QR&nbsp;codes</strong> com audiodescrição para que pessoas cegas identifiquem o produto com autonomia. A plataforma web permite configurar tamanho, material, quantidade e visualizar o impacto ambiental em termos de plástico evitado e água economizada. Esse configurador interativo é inédito no segmento de confeitaria artesanal e demonstra a viabilidade tecnológica do protótipo.</p>
+
+                    <h2>Impacto no Dia a Dia</h2>
+                    <p>Ao substituir embalagens plásticas por materiais biodegradáveis, cada caixa de doces evita dezenas de gramas de plástico e economiza centenas de mililitros de água. Um estudo ressalta que plásticos que permanecem no ambiente por séculos matam animais e poluem o ecossistema<sup><a href="#ref-2" aria-label="Referência 2">[2]</a></sup>. Por outro lado, a inclusão de Braille e QR&nbsp;codes promove independência a consumidores cegos, que deixam de depender de terceiros nas compras<sup><a href="#ref-3" aria-label="Referência 3">[3]</a></sup>. Essa solução impacta positivamente escolas, confeitarias e famílias, gerando consciência ecológica e inclusão social.</p>
+
+                    <h2>Sustentabilidade Financeira</h2>
+                    <p>Nosso modelo de negócio combina venda de doces artesanais com upsell de embalagens sustentáveis. O custo adicional dos materiais ecológicos (entre R$0,20 e R$0,80 por embalagem) é diluído no preço final. A plataforma calcula automaticamente o valor total e incentiva compras maiores com frete grátis acima de determinado valor. A produção em escala será possível através de parcerias com cooperativas de reciclagem e fabricantes de papel‑semente. A demanda por produtos sustentáveis cresce anualmente, o que garante viabilidade financeira ao empreendimento.</p>
+
+                    <h2>Protótipo e Próximos Passos</h2>
+                    <p>Desenvolvemos um protótipo funcional em forma de aplicativo web (PWA) com navegação acessível por teclado, leitor de tela, contraste adequado e atalhos. O usuário pode explorar o catálogo, configurar embalagens, gerar etiquetas inclusivas e realizar compras. Os próximos passos incluem:</p>
+                    <ul>
+                        <li>Realizar testes de usabilidade com pessoas cegas e confeiteiros artesanais.</li>
+                        <li>Expandir a variedade de materiais (ex.: plástico biodegradável de amido).</li>
+                        <li>Integrar painel administrativo com dashboards de impacto e vendas.</li>
+                        <li>Buscar parcerias com escolas do programa Liga Jovem para adoção em cantinas e eventos.</li>
+                    </ul>
+
+                    <h2>Como atendemos aos critérios do Desafio Liga Jovem</h2>
+                    <p>O regulamento do Desafio Liga Jovem prevê uma banca avaliadora baseada em cinco critérios principais. Nosso projeto foi concebido para atender cada um deles:</p>
+                    <ul>
+                        <li><strong>Entendimento do público‑alvo:</strong> fizemos pesquisas sobre consumidores sustentáveis, pessoas cegas e comunidades escolares, identificando suas necessidades de acessibilidade e sustentabilidade.</li>
+                        <li><strong>Criatividade &amp; Inovação:</strong> unimos materiais biodegradáveis, etiquetas em Braille e QR codes sonoros a um configurador de impacto ambiental, algo inédito no setor de confeitaria artesanal.</li>
+                        <li><strong>Impacto no dia a dia da comunidade:</strong> nossas embalagens reduzem o uso de plástico e oferecem independência a consumidores cegos, beneficiando escolas e pequenas empresas locais.</li>
+                        <li><strong>Sustentabilidade financeira:</strong> o modelo combina venda de doces com upsell de embalagens ecológicas e parcerias com cooperativas, garantindo margem de lucro e escalabilidade.</li>
+                        <li><strong>Protótipo funcional:</strong> desenvolvemos um PWA acessível que demonstra todas as funcionalidades em tempo real, preparado para testes de usuários.</li>
+                    </ul>
+
+                    <!-- Lista de referências usadas nesta página -->
+                    <section class="about-references">
+                        <h2>Referências</h2>
+                        <ol>
+                            <li id="ref-1">Portal São&nbsp;Francisco. <em>Decomposição do lixo</em> – o site relata que o papel se decompõe em 3&nbsp;a&nbsp;6&nbsp;meses enquanto uma garrafa plástica pode levar cerca de 400&nbsp;anos para desaparecer【87248633888516†L342-L357】.</li>
+                            <li id="ref-2">Oceana Brasil. <em>Plástico mata 1 em cada 10 animais marinhos no Brasil</em> – a matéria informa que a poluição plástica provoca ingestão e emaranhamento de detritos em mamíferos, aves, peixes e tartarugas, podendo causar mortes【177002672696941†L54-L63】.</li>
+                            <li id="ref-3">Turismo Adaptado. <em>Consumidores com deficiência visual e os rótulos em Braille</em> – destaca que pessoas cegas precisam de ajuda para fazer compras e defende embalagens com Braille ou texturas diferenciadas para promover autonomia【741833410304074†L22-L34】.</li>
+                        </ol>
+                    </section>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal para Formulários -->
+    <div id="modal" class="modal hidden" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+        <div class="modal__overlay" onclick="closeModal()"></div>
+        <div class="modal__content">
+            <header class="modal__header">
+                <h2 id="modal-title"></h2>
+                <button class="modal__close" onclick="closeModal()" aria-label="Fechar modal">×</button>
+            </header>
+            <div id="modal-body" class="modal__body">
+                <!-- Conteúdo do modal será inserido aqui -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Área para mensagens de status (Live Region) -->
+    <div id="status-messages" class="sr-only" aria-live="polite" role="status"></div>
+
+    <!-- Rodapé -->
+    <footer class="footer" role="contentinfo">
+        <div class="container footer__content">
+            <p class="footer__text">&copy; 2025 EmbalaVerde. Todos os direitos reservados.</p>
+            <div class="footer__links">
+                <a href="https://github.com/" target="_blank" rel="noopener" class="footer__link" aria-label="Acesse o GitHub do projeto">🐙 GitHub</a>
+                <a href="https://instagram.com/" target="_blank" rel="noopener" class="footer__link" aria-label="Acesse o Instagram do projeto">📸 Instagram</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="app.js"></script>
+</body>
+</html>
